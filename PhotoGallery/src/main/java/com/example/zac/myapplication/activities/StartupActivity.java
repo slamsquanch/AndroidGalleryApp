@@ -2,8 +2,10 @@ package com.example.zac.myapplication.activities;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
@@ -29,6 +31,7 @@ import com.example.zac.myapplication.database.DBHelper;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -99,18 +102,47 @@ public class StartupActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        /*super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_CAMERA) {
                 onCaptureImageResult(data);
             }
-            if (requestCode == SELECT_FILE) {
-                Log.d("select file", "OKKKK");
-            }
-            else
+            else {
+                makeImgFile(data);
                 Log.d("select file", "LOL NOOOPE :( ");
+            }
+        } */
+        switch (requestCode) {
+            case SELECT_FILE:
+                if (resultCode == RESULT_OK) {
+                    // Get the Uri of the selected file
+                    Uri uri = data.getData();
+                    Log.d("select file", "File Uri: " + uri.toString());
+                    // Get the path
+                    String path = null;
+                    try {
+                        path = getPath(this, uri);
+                    } catch (URISyntaxException e) {
+                        e.printStackTrace();
+                    }
+                    Log.d("select file", "File Path: " + path);
+                    // Get the file instance
+                    // File file = new File(path);
+                    // Initiate the upload
+                }
+                break;
+
+            case REQUEST_CAMERA:
+                Log.d("CAMERA", "resultCode: " + resultCode);
+                if (resultCode == RESULT_OK) {
+                    onCaptureImageResult(data);
+                }
+                break;
         }
+    super.onActivityResult(requestCode, resultCode, data);
     }
+
+
 
     //Use this for now
     private void onCaptureImageResult(Intent data) {
@@ -127,17 +159,14 @@ public class StartupActivity extends AppCompatActivity {
         Intent intent;
 
         if (Build.VERSION.SDK_INT < 19) {
-            intent = new Intent();
-            intent.setAction(Intent.ACTION_GET_CONTENT);
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
             startActivityForResult(intent, SELECT_FILE);
-            makeImgFile(intent);
         } else {
             intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setType("image/*");
             startActivityForResult(intent, SELECT_FILE);
-            makeImgFile(intent);
         }
     }
 
@@ -191,6 +220,31 @@ public class StartupActivity extends AppCompatActivity {
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
+
+
+
+    public static String getPath(Context context, Uri uri) throws URISyntaxException {
+        if ("content".equalsIgnoreCase(uri.getScheme())) {
+            String[] projection = {"_data"};
+            Cursor cursor = null;
+
+            try {
+                cursor = context.getContentResolver().query(uri, projection, null, null, null);
+                int column_index = cursor.getColumnIndexOrThrow("_data");
+                if (cursor.moveToFirst()) {
+                    return cursor.getString(column_index);
+                }
+            } catch (Exception e) {
+                // Eat it
+            }
+        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            return uri.getPath();
+        }
+
+        return null;
+
+    }
+
 
 
     public void insertToDB(View view) {
