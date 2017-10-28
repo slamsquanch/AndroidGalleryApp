@@ -1,5 +1,6 @@
 package com.example.zac.myapplication.activities;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -12,6 +13,9 @@ import android.support.v7.widget.Toolbar;
 
 import com.example.zac.myapplication.R;
 import com.example.zac.myapplication.classes.RecyclerViewAdapter;
+
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 public class GalleryGrid extends AppCompatActivity {
 
@@ -54,6 +58,13 @@ public class GalleryGrid extends AppCompatActivity {
         //adapter = new RecyclerViewAdapter(this, getIm)
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        Uri uri = Uri.parse("android.resource://com.example.zac.myapplication.activities/drawable/starwars.jpg");
+        try {
+            InputStream stream = getContentResolver().openInputStream(uri);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
     }
 

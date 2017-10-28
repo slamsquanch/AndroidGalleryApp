@@ -30,7 +30,9 @@ import com.example.zac.myapplication.classes.Image;
 import com.example.zac.myapplication.database.DBHelper;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.Date;
@@ -130,6 +132,8 @@ public class StartupActivity extends AppCompatActivity {
     }
 
     private void onSelectImageResult(Intent data) {
+
+
         // Get the Uri of the selected file
         Uri uri = data.getData();
         Log.d("select file", "File Uri: " + uri.toString());
