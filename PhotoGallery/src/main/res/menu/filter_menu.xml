@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:title="Filters"
+        android:enabled="false"
+        android:checkable="false" />
+    <item
+        android:id="@+id/filter_caption"
+        android:icon="@drawable/ic_menu_share"
+        android:title="Caption" />
+
+    <item
+        android:id="@+id/filter_time"
+        android:icon="@drawable/ic_menu_camera"
+        android:title="DateTime" />
+
+    <item
+        android:id="@+id/tiler_location"
+        android:icon="@drawable/ic_menu_gallery"
+        android:title="Location" />
+
+</menu>
