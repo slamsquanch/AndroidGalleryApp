@@ -115,20 +115,7 @@ public class StartupActivity extends AppCompatActivity {
         switch (requestCode) {
             case SELECT_FILE:
                 if (resultCode == RESULT_OK) {
-                    // Get the Uri of the selected file
-                    Uri uri = data.getData();
-                    Log.d("select file", "File Uri: " + uri.toString());
-                    // Get the path
-                    String path = null;
-                    try {
-                        path = getPath(this, uri);
-                    } catch (URISyntaxException e) {
-                        e.printStackTrace();
-                    }
-                    Log.d("select file", "File Path: " + path);
-                    // Get the file instance
-                    // File file = new File(path);
-                    // Initiate the upload
+                    onSelectImageResult(data);
                 }
                 break;
 
@@ -142,7 +129,25 @@ public class StartupActivity extends AppCompatActivity {
     super.onActivityResult(requestCode, resultCode, data);
     }
 
-
+    private void onSelectImageResult(Intent data) {
+        // Get the Uri of the selected file
+        Uri uri = data.getData();
+        Log.d("select file", "File Uri: " + uri.toString());
+        // Get the path
+        String path = null;
+        try {
+            path = getPath(this, uri);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        Log.d("select file", "File Path: " + path);
+        // Get the file instance
+        // File file = new File(path);
+        // Initiate the upload
+        Intent intent = new Intent(this, PreviewImageLarge.class);
+        intent.putExtra("MESSAGE", uri.toString());
+        startActivity(intent);
+    }
 
     //Use this for now
     private void onCaptureImageResult(Intent data) {
