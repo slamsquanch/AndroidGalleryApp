@@ -15,7 +15,8 @@ public class Image {
     private static int count = 0;
 
     // constructor retrieving ALL information about a photo.
-    public Image(String URI, String name, String caption, String time, String location) {
+    public Image(int ID, String URI, String name, String caption, String time, String location) {
+        this.id = ID;
         this.uri = URI;
         this.imgName = name;
         this.caption = caption;
@@ -25,7 +26,8 @@ public class Image {
     }
 
     // constructor retrieving ALL information about a photo.
-    public Image(String URI, String name, String caption, String time) {
+    public Image(int ID, String URI, String name, String caption, String time) {
+        this.id=ID;
         this.uri = URI;
         this.imgName = name;
         this.caption = caption;
@@ -33,9 +35,10 @@ public class Image {
     }
 
     // alternative constructor taking only a name and URI of an image.
-    public Image(String name, String uri) {
-        this.imgName = name;
+    public Image(int ID, String uri, String name) {
+        this.id=ID;
         this.uri = uri;
+        this.imgName = name;
         this.count++;
     }
 

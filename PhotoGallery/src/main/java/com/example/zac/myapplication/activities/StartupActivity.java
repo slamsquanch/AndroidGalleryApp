@@ -136,7 +136,10 @@ public class StartupActivity extends AppCompatActivity {
 
         // Get the Uri of the selected file
         Uri uri = data.getData();
+        currentURI = uri;
         Log.d("select file", "File Uri: " + uri.toString());
+        this.grantUriPermission(this.getPackageName(), currentURI, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        this.getContentResolver().takePersistableUriPermission(data.getData(), Intent.FLAG_GRANT_READ_URI_PERMISSION);
         // Get the path
         String path = null;
         try {
@@ -146,20 +149,24 @@ public class StartupActivity extends AppCompatActivity {
         }
         Log.d("select file", "File Path: " + path);
         // Get the file instance
-        // File file = new File(path);
         // Initiate the upload
         Intent intent = new Intent(this, PreviewImageLarge.class);
-        intent.putExtra("MESSAGE", uri.toString());
+        intent.putExtra("MESSAGE", currentURI.toString());
+        insertToDB();
         startActivity(intent);
     }
+
+
 
     //Use this for now
     private void onCaptureImageResult(Intent data) {
 
         Intent intent = new Intent(this, PreviewImageLarge.class);
         intent.putExtra("MESSAGE", currentURI.toString());
+        insertToDB();
         startActivity(intent);
     }
+
 
 
     // UPLOAD PHOTO BUTTON.  Choose from filesystem using intent.
@@ -180,7 +187,7 @@ public class StartupActivity extends AppCompatActivity {
     }
 
 
-    void makeImgFile(Intent intent) {
+    /*void makeImgFile(Intent intent) {
         //Creating file for image
         Calendar mcurrentDate = Calendar.getInstance();
         //+ Calendar.YEAR + Calendar.MONTH + Calendar.DAY_OF_MONTH + "_" +
@@ -191,6 +198,7 @@ public class StartupActivity extends AppCompatActivity {
 
         intent.putExtra(MediaStore.EXTRA_OUTPUT, currentURI);
     }
+*/
 
 
     void checkPermissions() {
@@ -256,11 +264,19 @@ public class StartupActivity extends AppCompatActivity {
 
 
 
-    public void insertToDB(View view) {
+    public void insertToDB() {
             DBHelper.getInstance(this).insertPhoto(
-                    new Image(currentURI.toString(), IMG_NAME + Image.getCount(), "",
-                              "" + (month) + "-" + day + "-" + year));
+                    new Image(0, currentURI.toString(), IMG_NAME + Image.getCount(), "",
+                              "" + (month + 1) + "-" + day + "-" + year));
             Intent intent = new Intent(this, GalleryGrid.class);
             startActivity(intent);
+    }
+
+
+
+    public void testGallery(View view) {
+        Intent intent = new Intent(this, GalleryGrid.class);
+        Log.d("", "BEFORE SWITCH INTENT");
+        startActivity(intent);
     }
 }

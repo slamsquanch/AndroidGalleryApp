@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/PhotoGallery.iml" filepath="$PROJECT_DIR$/PhotoGallery.iml" />
-      <module fileurl="file://$PROJECT_DIR$/PhotoGallery/PhotoGallery-PhotoGallery.iml" filepath="$PROJECT_DIR$/PhotoGallery/PhotoGallery-PhotoGallery.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AndroidGalleryApp.iml" filepath="$PROJECT_DIR$/AndroidGalleryApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PhotoGallery/PhotoGallery.iml" filepath="$PROJECT_DIR$/PhotoGallery/PhotoGallery.iml" />
     </modules>
   </component>
 </project>

@@ -26,8 +26,7 @@
         android:layout_width="172dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|center_horizontal"
-        android:onClick="takePhoto"
-        android:text="Take Photos" />
+        android:text="Preview Photo" />
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"

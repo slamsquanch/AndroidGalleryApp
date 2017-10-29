@@ -18,11 +18,11 @@ import java.util.ArrayList;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<ImageHolder> {
     Context context;
-    ArrayList<Image> list;
+    ArrayList<CreateList> list;
 
-    public RecyclerViewAdapter(Context context, ArrayList<Image> images) {
+    public RecyclerViewAdapter(Context context, ArrayList<CreateList> createlist) {
         this.context = context;
-        this.list = images;
+        this.list = createlist;
     }
 
     // Initialize view holder.
@@ -34,11 +34,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<ImageHolder> {
 
     }
 
+
     // Bind the views to data.
     @Override
     public void onBindViewHolder(ImageHolder holder, final int position) {
-        holder.text.setText(list.get(position).getImgName());
-        holder.img.setImageResource(list.get(position).getID());
+        holder.title.setText(list.get(position).getImgName());
+        holder.img.setImageResource(list.get(position).getImgID());
 
         holder.setItemClickListener(new ItemClickListener() {
             @Override
@@ -51,6 +52,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<ImageHolder> {
     // Total count of items.
     @Override
     public int getItemCount() {
-        return 0;
+        return list.size();
     }
 }

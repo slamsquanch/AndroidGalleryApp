@@ -4,6 +4,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.zac.myapplication.R;
 import com.example.zac.myapplication.interfaces.ItemClickListener;
 
 /**
@@ -13,11 +14,14 @@ import com.example.zac.myapplication.interfaces.ItemClickListener;
 public class ImageHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     ImageView img;
-    TextView text;
+    TextView title;
     ItemClickListener itemClickListener;
 
     public ImageHolder(View itemView) {
         super(itemView);
+        title = (TextView) itemView.findViewById(R.id.name);
+        img = (ImageView) itemView.findViewById(R.id.image);
+
     }
 
     public void setItemClickListener(ItemClickListener i) {

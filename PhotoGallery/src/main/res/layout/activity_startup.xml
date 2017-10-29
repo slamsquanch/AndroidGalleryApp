@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -41,5 +42,15 @@
         android:text="Choose Photos"
         app:layout_anchor="@+id/include"
         app:layout_anchorGravity="center_vertical|center_horizontal" />
+
+    <Button
+        android:layout_width="173dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="bottom|center_horizontal"
+        android:background="@android:color/background_light"
+        android:backgroundTint="?attr/colorButtonNormal"
+        android:onClick="testGallery"
+        android:text="Gallery" />
 
 </android.support.design.widget.CoordinatorLayout>
