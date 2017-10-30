@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -23,18 +23,24 @@
 
     <ImageView
         android:id="@+id/PreviewImageCapture"
-        android:layout_width="172dp"
-        android:layout_height="wrap_content"
+        android:layout_width="370dp"
+        android:layout_height="330dp"
+        android:layout_above="@+id/uploadButton"
+        android:layout_centerHorizontal="true"
         android:layout_gravity="center_vertical|center_horizontal"
+        android:layout_marginBottom="36dp"
         android:text="Preview Photo" />
 
-    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="?android:attr/windowBackground"
-        app:menu="@menu/navigation" />
+    <Button
+        android:id="@+id/uploadButton"
+        android:layout_width="170dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="42dp"
+        android:onClick="uploadPhoto"
+        android:text="Upload" />
 
-</android.support.design.widget.CoordinatorLayout>
+
+</RelativeLayout>
 

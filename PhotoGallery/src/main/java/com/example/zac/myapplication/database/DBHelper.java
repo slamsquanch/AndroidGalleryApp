@@ -71,6 +71,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void insertPhoto(Image i) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+        values.put("id", i.getID());
         values.put("uri", i.getUri());
         values.put("imgName", i.getImgName());
         values.put("caption", i.getCaption());

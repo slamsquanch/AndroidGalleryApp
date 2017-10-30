@@ -43,14 +43,11 @@ public class StartupActivity extends AppCompatActivity {
     private final int REQUEST_CAMERA = 0;
     private final int SELECT_FILE = 1;
     private Uri currentURI = null; //for clicking a BUTTON
-    private final String IMG_NAME = "IMG_";
-    private ImageView ivImage; //initialize this in onCreate
     private String dir = null;
     private int month, day, year;   // used for TimeStamps
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //ivImage = null;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_startup);
@@ -80,7 +77,6 @@ public class StartupActivity extends AppCompatActivity {
         File newDirectory = new File(dir);
         newDirectory.mkdirs();
 
-        //ivImage = (ImageView) findViewById(R.id.PreviewImageCapture);
     }
 
 
@@ -151,8 +147,11 @@ public class StartupActivity extends AppCompatActivity {
         // Get the file instance
         // Initiate the upload
         Intent intent = new Intent(this, PreviewImageLarge.class);
-        intent.putExtra("MESSAGE", currentURI.toString());
-        insertToDB();
+        intent.putExtra("URI", currentURI.toString());
+        intent.putExtra("DIR", dir);
+        intent.putExtra("MONTH", String.valueOf(month));
+        intent.putExtra("DAY", String.valueOf(day));
+        intent.putExtra("YEAR", String.valueOf(year));
         startActivity(intent);
     }
 
@@ -162,8 +161,11 @@ public class StartupActivity extends AppCompatActivity {
     private void onCaptureImageResult(Intent data) {
 
         Intent intent = new Intent(this, PreviewImageLarge.class);
-        intent.putExtra("MESSAGE", currentURI.toString());
-        insertToDB();
+        intent.putExtra("URI", currentURI.toString());
+        intent.putExtra("DIR", dir);
+        intent.putExtra("MONTH", String.valueOf(month));
+        intent.putExtra("DAY", String.valueOf(day));
+        intent.putExtra("YEAR", String.valueOf(year));
         startActivity(intent);
     }
 
@@ -264,13 +266,13 @@ public class StartupActivity extends AppCompatActivity {
 
 
 
-    public void insertToDB() {
+    /*public void insertToDB() {
             DBHelper.getInstance(this).insertPhoto(
                     new Image(0, currentURI.toString(), IMG_NAME + Image.getCount(), "",
                               "" + (month + 1) + "-" + day + "-" + year));
             Intent intent = new Intent(this, GalleryGrid.class);
             startActivity(intent);
-    }
+    }*/
 
 
 
