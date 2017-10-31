@@ -7,7 +7,8 @@
     <item
         android:id="@+id/filter_caption"
         android:icon="@drawable/ic_menu_share"
-        android:title="Caption" />
+        android:title="Caption"
+        android:onClick="filterTime"/>
 
     <item
         android:id="@+id/filter_time"
@@ -15,7 +16,7 @@
         android:title="DateTime" />
 
     <item
-        android:id="@+id/tiler_location"
+        android:id="@+id/filter_location"
         android:icon="@drawable/ic_menu_gallery"
         android:title="Location" />
 

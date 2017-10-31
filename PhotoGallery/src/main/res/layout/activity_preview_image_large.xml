@@ -37,7 +37,7 @@
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="42dp"
+        android:layout_marginBottom="39dp"
         android:onClick="uploadPhoto"
         android:text="Upload" />
 

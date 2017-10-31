@@ -20,6 +20,7 @@
         <activity android:name=".activities.StartupActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -28,7 +29,7 @@
             android:name=".activities.GalleryGrid"
             android:label="GalleryGrid"
             android:theme="@style/AppTheme" />
-        <activity android:name=".activities.PreviewImageLarge"></activity>
+        <activity android:name=".activities.PreviewImageLarge" />
     </application>
 
 </manifest>

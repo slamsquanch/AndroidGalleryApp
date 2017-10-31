@@ -50,7 +50,7 @@
         android:layout_gravity="bottom|center_horizontal"
         android:background="@android:color/background_light"
         android:backgroundTint="?attr/colorButtonNormal"
-        android:onClick="testGallery"
+        android:onClick="viewGallery"
         android:text="Gallery" />
 
 </android.support.design.widget.CoordinatorLayout>

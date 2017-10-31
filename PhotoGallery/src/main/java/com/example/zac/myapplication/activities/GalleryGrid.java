@@ -1,6 +1,9 @@
 package com.example.zac.myapplication.activities;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,20 +14,31 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
 
 import com.example.zac.myapplication.R;
 import com.example.zac.myapplication.classes.CreateList;
+import com.example.zac.myapplication.classes.Image;
 import com.example.zac.myapplication.classes.RecyclerViewAdapter;
+import com.example.zac.myapplication.database.DBHelper;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
 public class GalleryGrid extends AppCompatActivity {
 
     private TextView mTextMessage;
+    private boolean timeFilterOn = false;
+    private boolean captionFilterOn = false;
+    private boolean locationFilterOn = false;
+    //private MenuItem pickDate = null;
 
     private final String imgNames[] = {
             "samus",
@@ -88,7 +102,6 @@ public class GalleryGrid extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery_grid);
 
-        Log.d("","INSIDE CREATE");
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -110,6 +123,8 @@ public class GalleryGrid extends AppCompatActivity {
             // Bottom nav bar
             BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
             navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+            //pickDate = (MenuItem) findViewById(R.id.filter_location);
+
         }
 
         /*Uri uri = Uri.parse("android.resource://com.example.zac.myapplication.activities/drawable/starwars.jpg");
@@ -131,18 +146,83 @@ public class GalleryGrid extends AppCompatActivity {
 
 
 
+    public void filterTime(MenuItem item) {
+       this.timeFilterOn = true;
+    }
+
+
+    public void filterCaption(MenuItem item) {
+        this.captionFilterOn = true;
+    }
+
+
+    public void filterLocation(MenuItem item) {
+        this.locationFilterOn = true;
+        /*pickDate.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                // show today
+                DatePickerDialog dp = new DatePickerDialog(PreviewImageLarge.this, new DatePickerDialog.OnDateSetListener() {
+                    public void onDateSet(DatePicker datepicker, int year, int month, int day) {
+                    }
+                }, year, month, day);
+                dp.setTitle("Select date");
+                dp.show();
+
+                return false;
+            }
+        });*/
+    }
+
+
+
 
 
     private ArrayList<CreateList> prepareData(){
 
-        ArrayList<CreateList> theimage = new ArrayList<>();
-        for(int i = 0; i < imgNames.length; i++){
+        ArrayList<CreateList> imageList = new ArrayList<>();
+        /*for(int i = 0; i < imgNames.length; i++){   // DUMMY DATA loop
             CreateList createList = new CreateList();
             createList.setImgName(imgNames[i]);
             createList.setImgID(imgIDs[i]);
-            theimage.add(createList);
+            imageList.add(createList);
         }
-        return theimage;
+        return theimage;*/
+
+        ArrayList<Image> dbImages = DBHelper.getInstance(this).getGallery();
+        for(int i = 0; i < dbImages.size(); i ++) {
+            Log.d("dbIMAGE", "   ID: " + dbImages.get(i).getID() + "   DATE: " + dbImages.get(i).getTimeStamp());
+        }
+
+        /*if (dbImages.size() == 0) {     // empty placeholders if I feel like it.
+            for(int i = 0; i < 9; i++){
+            createList.setImgName("empty");
+            createList.setImgID( R.drawable.placeholder);
+            imageList.add(createList);
+        }*/
+        //}
+        if (!timeFilterOn && !captionFilterOn && !locationFilterOn ){
+            for(int i = 0; i < dbImages.size(); i++) {
+                CreateList createList = new CreateList();
+                // get image tag
+                createList.setImgName(dbImages.get(i).getCaption());
+                createList.setImgID(dbImages.get(i).getID());
+                // URI
+                Uri uri = Uri.parse(dbImages.get(i).getUri());
+                Bitmap thumbnail = null;
+                try {
+                    InputStream stream = getContentResolver().openInputStream(uri);
+                    thumbnail = BitmapFactory.decodeStream(stream );
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                createList.setImgBitmap(thumbnail);
+                imageList.add(createList);
+
+            }
+        }
+        return imageList;
     }
 
 }

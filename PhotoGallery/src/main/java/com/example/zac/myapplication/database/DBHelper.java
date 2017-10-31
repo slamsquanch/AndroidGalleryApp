@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class DBHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 4;
     public static final String DATABASE_NAME = "Image.db";
     public static final String DATABASE_ID = "id";
     public static final String TABLE_NAME = "ImageTable";
@@ -37,9 +37,9 @@ public class DBHelper extends SQLiteOpenHelper {
                 "(" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "uri TEXT," +
+                "imgName TEXT," +
                 "caption TEXT," +
-                "description TEXT," +
-                "date TEXT" +
+                "time TEXT" +
                 ")";
         db.execSQL(CREATE_TABLE);
     }
@@ -48,8 +48,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // This database is only a cache for online data, so its upgrade policy is
         // to simply to discard the data and start over
-        db.execSQL("DROP TABLE IF EXISTS user");
-        db.execSQL("DROP TABLE IF EXISTS image");
+        db.execSQL("DROP TABLE IF EXISTS ImageTable");
         onCreate(db);
     }
 
@@ -68,14 +67,14 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
     // insert pic
-    public void insertPhoto(Image i) {
+    public void insertPhoto(Image img) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put("id", i.getID());
-        values.put("uri", i.getUri());
-        values.put("imgName", i.getImgName());
-        values.put("caption", i.getCaption());
-        values.put("time", i.getTimeStamp());
+        //values.put("id", img.getID());
+        values.put("uri", img.getUri());
+        values.put("imgName", img.getImgName());
+        values.put("caption", img.getCaption());
+        values.put("time", img.getTimeStamp());
         db.insert(TABLE_NAME, null, values);
         db.close();
     }
@@ -105,11 +104,7 @@ public class DBHelper extends SQLiteOpenHelper {
         if (cursor != null)
             cursor.moveToFirst();
         Image img = new Image();
-        img.setID(cursor.getInt(0));
-        img.setUri(cursor.getString(1));
-        img.setImgName(cursor.getString(2));
-        img.setCaption(cursor.getString(3));
-        img.setTime(cursor.getString(4));
+        populate(img, cursor);
 
         db.close();
         return img;

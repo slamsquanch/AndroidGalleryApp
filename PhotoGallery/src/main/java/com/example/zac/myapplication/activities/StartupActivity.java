@@ -2,6 +2,7 @@ package com.example.zac.myapplication.activities;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -22,8 +23,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.zac.myapplication.R;
 import com.example.zac.myapplication.classes.Image;
@@ -45,6 +49,8 @@ public class StartupActivity extends AppCompatActivity {
     private Uri currentURI = null; //for clicking a BUTTON
     private String dir = null;
     private int month, day, year;   // used for TimeStamps
+    private String timeStamp;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,14 +65,6 @@ public class StartupActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("QuickPic");
 
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        }); */
 
         //Ignores URI Issue
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
@@ -84,12 +82,7 @@ public class StartupActivity extends AppCompatActivity {
     // TAKE PHOTO BUTTON.  Opens Android Camera using intent.
     public void takePhoto(View view) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        //Creating file for image
-        Calendar mcurrentDate = Calendar.getInstance();
-        //+ Calendar.YEAR + Calendar.MONTH + Calendar.DAY_OF_MONTH + "_" +
-        String timeStamp = "" + Calendar.YEAR + Calendar.MONTH + Calendar.DAY_OF_MONTH + Calendar.HOUR + Calendar.MINUTE + Calendar.SECOND;
-        //new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        setDate();
         File image = new File(dir, "IMAGE_" + timeStamp + ".jpg");
         currentURI = Uri.fromFile(image);
 
@@ -129,7 +122,7 @@ public class StartupActivity extends AppCompatActivity {
 
     private void onSelectImageResult(Intent data) {
 
-
+        setDate();
         // Get the Uri of the selected file
         Uri uri = data.getData();
         currentURI = uri;
@@ -159,7 +152,7 @@ public class StartupActivity extends AppCompatActivity {
 
     //Use this for now
     private void onCaptureImageResult(Intent data) {
-
+        setDate();
         Intent intent = new Intent(this, PreviewImageLarge.class);
         intent.putExtra("URI", currentURI.toString());
         intent.putExtra("DIR", dir);
@@ -175,7 +168,7 @@ public class StartupActivity extends AppCompatActivity {
     public void uploadPhoto(View view) {
 
         Intent intent;
-
+        setDate();
         if (Build.VERSION.SDK_INT < 19) {
             intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
@@ -189,25 +182,10 @@ public class StartupActivity extends AppCompatActivity {
     }
 
 
-    /*void makeImgFile(Intent intent) {
-        //Creating file for image
-        Calendar mcurrentDate = Calendar.getInstance();
-        //+ Calendar.YEAR + Calendar.MONTH + Calendar.DAY_OF_MONTH + "_" +
-        String timeStamp = "" + Calendar.YEAR + Calendar.MONTH + Calendar.DAY_OF_MONTH + Calendar.HOUR + Calendar.MINUTE + Calendar.SECOND;
-        //new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        File image = new File(dir, "IMAGE_" + timeStamp + ".jpg");
-        currentURI = Uri.fromFile(image);
-
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, currentURI);
-    }
-*/
-
 
     void checkPermissions() {
         //select which permission you want
         final String permission = Manifest.permission.CAMERA;
-        //final String permission = Manifest.permission.Storage;
-        // if in fragment use getActivity()
         if (ContextCompat.checkSelfPermission(StartupActivity.this, permission)
                 != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(StartupActivity.this, permission)) {
@@ -266,17 +244,21 @@ public class StartupActivity extends AppCompatActivity {
 
 
 
-    /*public void insertToDB() {
-            DBHelper.getInstance(this).insertPhoto(
-                    new Image(0, currentURI.toString(), IMG_NAME + Image.getCount(), "",
-                              "" + (month + 1) + "-" + day + "-" + year));
-            Intent intent = new Intent(this, GalleryGrid.class);
-            startActivity(intent);
-    }*/
+    private void setDate() {
+        Calendar mcurrentDate = Calendar.getInstance();
+        //+ Calendar.YEAR + Calendar.MONTH + Calendar.DAY_OF_MONTH + "_" +
+        timeStamp = "" + mcurrentDate.YEAR + mcurrentDate.MONTH + mcurrentDate.DAY_OF_MONTH
+                + mcurrentDate.HOUR + mcurrentDate.MINUTE + mcurrentDate.SECOND;
+
+        month = mcurrentDate.get(Calendar.MONTH) + 1;
+        day = mcurrentDate.get(Calendar.DAY_OF_MONTH);
+        year = mcurrentDate.get(Calendar.YEAR);
+        Log.d("DATE", "   DATE: " + month + "-" + day + "-" + year);
+
+    }
 
 
-
-    public void testGallery(View view) {
+    public void viewGallery(View view) {
         Intent intent = new Intent(this, GalleryGrid.class);
         Log.d("", "BEFORE SWITCH INTENT");
         startActivity(intent);

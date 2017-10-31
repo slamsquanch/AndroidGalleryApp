@@ -39,7 +39,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<ImageHolder> {
     @Override
     public void onBindViewHolder(ImageHolder holder, final int position) {
         holder.title.setText(list.get(position).getImgName());
-        holder.img.setImageResource(list.get(position).getImgID());
+        //holder.img.setImageResource(list.get(position).getImgID());
+        holder.img.setImageBitmap(list.get(position).getImgBitmap());
 
         holder.setItemClickListener(new ItemClickListener() {
             @Override
