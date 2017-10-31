@@ -104,6 +104,9 @@ public class PreviewImageLarge extends AppCompatActivity {
 
 
         Intent intent = new Intent(this, GalleryGrid.class);
+        intent.putExtra("MONTH", "" + month);
+        intent.putExtra("DAY", "" + day);
+        intent.putExtra("YEAR", "" + year);
         startActivity(intent);
     }
 

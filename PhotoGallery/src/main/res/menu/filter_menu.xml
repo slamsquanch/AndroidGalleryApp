@@ -13,7 +13,8 @@
     <item
         android:id="@+id/filter_time"
         android:icon="@drawable/ic_menu_camera"
-        android:title="DateTime" />
+        android:title="DateTime"
+        android:onClick="filterTime"/>
 
     <item
         android:id="@+id/filter_location"

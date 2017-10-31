@@ -142,9 +142,9 @@ public class StartupActivity extends AppCompatActivity {
         Intent intent = new Intent(this, PreviewImageLarge.class);
         intent.putExtra("URI", currentURI.toString());
         intent.putExtra("DIR", dir);
-        intent.putExtra("MONTH", String.valueOf(month));
-        intent.putExtra("DAY", String.valueOf(day));
-        intent.putExtra("YEAR", String.valueOf(year));
+        intent.putExtra("MONTH", "" + month);
+        intent.putExtra("DAY", "" + day);
+        intent.putExtra("YEAR", "" + year);
         startActivity(intent);
     }
 
@@ -156,9 +156,9 @@ public class StartupActivity extends AppCompatActivity {
         Intent intent = new Intent(this, PreviewImageLarge.class);
         intent.putExtra("URI", currentURI.toString());
         intent.putExtra("DIR", dir);
-        intent.putExtra("MONTH", String.valueOf(month));
-        intent.putExtra("DAY", String.valueOf(day));
-        intent.putExtra("YEAR", String.valueOf(year));
+        intent.putExtra("MONTH", "" + month);
+        intent.putExtra("DAY", "" + day);
+        intent.putExtra("YEAR", "" + year);
         startActivity(intent);
     }
 
@@ -259,7 +259,11 @@ public class StartupActivity extends AppCompatActivity {
 
 
     public void viewGallery(View view) {
+        setDate();
         Intent intent = new Intent(this, GalleryGrid.class);
+        intent.putExtra("MONTH", "" + month);
+        intent.putExtra("DAY", "" + day);
+        intent.putExtra("YEAR", "" + year);
         Log.d("", "BEFORE SWITCH INTENT");
         startActivity(intent);
     }

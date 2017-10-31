@@ -12,4 +12,5 @@
     <string name="title_activity_view_photos">ViewPhotosActivity</string>
     <string name="title_activity_gallery_grid">GalleryGrid</string>
     <string name="title_activity_startup">StartupActivity</string>
+    <string name="title_activity_date">DateActivity</string>
 </resources>

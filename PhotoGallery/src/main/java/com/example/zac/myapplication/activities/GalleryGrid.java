@@ -38,6 +38,7 @@ public class GalleryGrid extends AppCompatActivity {
     private boolean timeFilterOn = false;
     private boolean captionFilterOn = false;
     private boolean locationFilterOn = false;
+    private int month, day, year;   // used for TimeStamps
     //private MenuItem pickDate = null;
 
     private final String imgNames[] = {
@@ -102,8 +103,11 @@ public class GalleryGrid extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery_grid);
 
-
         Intent intent = getIntent();
+        month = Integer.parseInt(intent.getStringExtra("MONTH"));
+        day = Integer.parseInt(intent.getStringExtra("DAY"));
+        year = Integer.parseInt(intent.getStringExtra("YEAR"));
+
         if (intent != null) {
 
             mTextMessage = (TextView) findViewById(R.id.message);
@@ -148,6 +152,11 @@ public class GalleryGrid extends AppCompatActivity {
 
     public void filterTime(MenuItem item) {
        this.timeFilterOn = true;
+        Intent intent = new Intent(this, DateActivity.class);
+        intent.putExtra("MONTH", "" + month);
+        intent.putExtra("DAY", "" + day);
+        intent.putExtra("YEAR", "" + year);
+        startActivity(intent);
     }
 
 
@@ -158,21 +167,6 @@ public class GalleryGrid extends AppCompatActivity {
 
     public void filterLocation(MenuItem item) {
         this.locationFilterOn = true;
-        /*pickDate.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-
-                // show today
-                DatePickerDialog dp = new DatePickerDialog(PreviewImageLarge.this, new DatePickerDialog.OnDateSetListener() {
-                    public void onDateSet(DatePicker datepicker, int year, int month, int day) {
-                    }
-                }, year, month, day);
-                dp.setTitle("Select date");
-                dp.show();
-
-                return false;
-            }
-        });*/
     }
 
 
