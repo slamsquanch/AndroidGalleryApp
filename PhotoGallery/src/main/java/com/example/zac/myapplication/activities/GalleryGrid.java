@@ -18,9 +18,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
 
+import com.example.zac.myapplication.Dialogs.TagDialog;
 import com.example.zac.myapplication.R;
 import com.example.zac.myapplication.classes.CreateList;
 import com.example.zac.myapplication.classes.Image;
@@ -39,6 +41,9 @@ public class GalleryGrid extends AppCompatActivity {
     private boolean captionFilterOn = false;
     private boolean locationFilterOn = false;
     private int month, day, year;   // used for TimeStamps
+    private Thread thread;
+    private RecyclerView rv;
+    private RecyclerViewAdapter adapter;
     //private MenuItem pickDate = null;
 
     private final String imgNames[] = {
@@ -109,21 +114,22 @@ public class GalleryGrid extends AppCompatActivity {
         year = Integer.parseInt(intent.getStringExtra("YEAR"));
 
         if (intent != null) {
-
             mTextMessage = (TextView) findViewById(R.id.message);
-            RecyclerView rv = (RecyclerView) findViewById(R.id.imagegallery);
+            rv = (RecyclerView) findViewById(R.id.imagegallery);
             rv.setHasFixedSize(true);
             ArrayList<CreateList> createLists = prepareData();
 
             RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 3);
             rv.setLayoutManager(layoutManager);
 
-            RecyclerViewAdapter adapter = new RecyclerViewAdapter(getApplicationContext(), createLists);
+            adapter = new RecyclerViewAdapter(getApplicationContext(), createLists);
             rv.setAdapter(adapter);
+
             // Toolbar
             Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
             setSupportActionBar(myToolbar);
             getSupportActionBar().setTitle("QuickPic");
+
             // Bottom nav bar
             BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
             navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -151,7 +157,7 @@ public class GalleryGrid extends AppCompatActivity {
 
 
     public void filterTime(MenuItem item) {
-       this.timeFilterOn = true;
+        this.timeFilterOn = true;
         Intent intent = new Intent(this, DateActivity.class);
         intent.putExtra("MONTH", "" + month);
         intent.putExtra("DAY", "" + day);
@@ -162,7 +168,40 @@ public class GalleryGrid extends AppCompatActivity {
 
     public void filterCaption(MenuItem item) {
         this.captionFilterOn = true;
+        final TagDialog td = new TagDialog();
+        td.show(getFragmentManager(), "Dialog");
+
+        thread = new Thread () {
+
+            @Override
+            public void run () {
+                while (td.getStatus ().equals ("") || td.getStatus ().equals ("waiting"));
+                Log.e (":)", td.getStatus());
+                if (td.getStatus().equals ("search")) {
+                    final ArrayList<CreateList> imgs = prepareDataCaption();
+                    Log.e (":)", "" + imgs.size());
+                    runOnUiThread(new Runnable () {
+
+                        @Override
+                        public void run () {
+
+                            RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 3);
+                            rv.setLayoutManager(layoutManager);
+
+                            adapter = new RecyclerViewAdapter(getApplicationContext(), imgs);
+                            rv.setAdapter(adapter);
+                        }
+
+                    });
+                }
+            }
+        };
+        thread.start();
     }
+
+    /*
+
+     */
 
 
     public void filterLocation(MenuItem item) {
@@ -170,7 +209,36 @@ public class GalleryGrid extends AppCompatActivity {
     }
 
 
+    private ArrayList<CreateList> prepareDataCaption(){
 
+        ArrayList<CreateList> imageList = new ArrayList<>();
+
+        ArrayList<Image> dbImages = DBHelper.getInstance(getApplicationContext()).filterCaption(TagDialog.search_text);
+        Log.e (":)", "" + dbImages.size());
+        for(int i = 0; i < dbImages.size(); i ++) {
+            Log.d("dbIMAGE", "   ID: " + dbImages.get(i).getID() + "   DATE: " + dbImages.get(i).getTimeStamp());
+        }
+
+        //}
+        for(int i = 0; i < dbImages.size(); i++) {
+            CreateList createList = new CreateList();
+            // get image tag
+            createList.setImgName(dbImages.get(i).getCaption());
+            createList.setImgID(dbImages.get(i).getID());
+            // URI
+            Uri uri = Uri.parse(dbImages.get(i).getUri());
+            Bitmap thumbnail = null;
+            try {
+                InputStream stream = getContentResolver().openInputStream(uri);
+                thumbnail = BitmapFactory.decodeStream(stream );
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            createList.setImgBitmap(thumbnail);
+            imageList.add(createList);
+        }
+        return imageList;
+    }
 
 
     private ArrayList<CreateList> prepareData(){
@@ -196,25 +264,24 @@ public class GalleryGrid extends AppCompatActivity {
             imageList.add(createList);
         }*/
         //}
-        if (!timeFilterOn && !captionFilterOn && !locationFilterOn ){
-            for(int i = 0; i < dbImages.size(); i++) {
-                CreateList createList = new CreateList();
-                // get image tag
-                createList.setImgName(dbImages.get(i).getCaption());
-                createList.setImgID(dbImages.get(i).getID());
-                // URI
-                Uri uri = Uri.parse(dbImages.get(i).getUri());
-                Bitmap thumbnail = null;
-                try {
-                    InputStream stream = getContentResolver().openInputStream(uri);
-                    thumbnail = BitmapFactory.decodeStream(stream );
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                createList.setImgBitmap(thumbnail);
-                imageList.add(createList);
 
+        for(int i = 0; i < dbImages.size(); i++) {
+            CreateList createList = new CreateList();
+            // get image tag
+            createList.setImgName(dbImages.get(i).getCaption());
+            createList.setImgID(dbImages.get(i).getID());
+            // URI
+            Uri uri = Uri.parse(dbImages.get(i).getUri());
+            Bitmap thumbnail = null;
+            try {
+                InputStream stream = getContentResolver().openInputStream(uri);
+                thumbnail = BitmapFactory.decodeStream(stream );
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            createList.setImgBitmap(thumbnail);
+            imageList.add(createList);
+
         }
         return imageList;
     }

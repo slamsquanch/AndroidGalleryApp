@@ -13,4 +13,6 @@
     <string name="title_activity_gallery_grid">GalleryGrid</string>
     <string name="title_activity_startup">StartupActivity</string>
     <string name="title_activity_date">DateActivity</string>
+    <string name="tag_dialog">Search Tag</string>
+    <string name="cancel">Cancel</string>
 </resources>
