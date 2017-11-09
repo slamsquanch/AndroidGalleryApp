@@ -17,7 +17,7 @@ import com.example.zac.myapplication.R;
  * Created by Zac Koop on 2017-11-02.
  */
 
-public class TagDialog extends DialogFragment {
+public class LocationDialog extends DialogFragment {
 
     private String status = "";
     public static String search_text = "";
@@ -40,7 +40,7 @@ public class TagDialog extends DialogFragment {
         final View v = inflater.inflate(R.layout.dialog_tag_search, null);
         builder.setView(v)
                 // Add action buttons
-                .setPositiveButton("Search", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Location", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         // sign in the user ...

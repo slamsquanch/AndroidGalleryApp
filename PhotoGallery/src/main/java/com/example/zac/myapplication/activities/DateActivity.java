@@ -106,6 +106,17 @@ public class DateActivity extends AppCompatActivity {
 
     }
 
+    public void backToGallery(View view) {
+        Intent intent = new Intent(this, GalleryGrid.class);
+        intent.putExtra("MONTH_ START", "" + startMonth);
+        intent.putExtra("DAY_START", "" + startDay);
+        intent.putExtra("YEAR_START", "" + startYear);
+        intent.putExtra("MONTH_ END", "" + endMonth);
+        intent.putExtra("DAY_END", "" + endDay);
+        intent.putExtra("YEAR_END", "" + endYear);
+        startActivity(intent);
+    }
+
 
 
 

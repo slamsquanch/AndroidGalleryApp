@@ -21,6 +21,7 @@
     <item
         android:id="@+id/filter_location"
         android:icon="@drawable/ic_menu_gallery"
-        android:title="Location" />
+        android:title="Location"
+        android:onClick="filterLocation"/>
 
 </menu>

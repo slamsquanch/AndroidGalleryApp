@@ -1,6 +1,7 @@
 package com.example.zac.myapplication.activities;
 
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,12 +18,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
 
+import com.example.zac.myapplication.Dialogs.LocationDialog;
 import com.example.zac.myapplication.Dialogs.TagDialog;
 import com.example.zac.myapplication.R;
 import com.example.zac.myapplication.classes.CreateList;
@@ -29,7 +30,6 @@ import com.example.zac.myapplication.classes.Image;
 import com.example.zac.myapplication.classes.RecyclerViewAdapter;
 import com.example.zac.myapplication.database.DBHelper;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -40,7 +40,8 @@ public class GalleryGrid extends AppCompatActivity {
     private boolean timeFilterOn = false;
     private boolean captionFilterOn = false;
     private boolean locationFilterOn = false;
-    private int month, day, year;   // used for TimeStamps
+    private int curMonth, curtDay, curYear;   // used for TimeStamps
+    private int startYear, startMonth, startDay, endYear, endMonth, endDay;
     private Thread thread;
     private RecyclerView rv;
     private RecyclerViewAdapter adapter;
@@ -109,9 +110,16 @@ public class GalleryGrid extends AppCompatActivity {
         setContentView(R.layout.activity_gallery_grid);
 
         Intent intent = getIntent();
-        month = Integer.parseInt(intent.getStringExtra("MONTH"));
-        day = Integer.parseInt(intent.getStringExtra("DAY"));
-        year = Integer.parseInt(intent.getStringExtra("YEAR"));
+        curMonth = Integer.parseInt(intent.getStringExtra("MONTH"));
+        curtDay = Integer.parseInt(intent.getStringExtra("DAY"));
+        curYear = Integer.parseInt(intent.getStringExtra("YEAR"));
+
+        this.startMonth = curMonth;
+        this.startDay = curtDay;
+        this.startYear = curYear;
+        this.endMonth = curMonth;
+        this.endDay = curtDay;
+        this.endYear = curYear;
 
         if (intent != null) {
             mTextMessage = (TextView) findViewById(R.id.message);
@@ -157,18 +165,108 @@ public class GalleryGrid extends AppCompatActivity {
 
 
     public void filterTime(MenuItem item) {
+        timeFilterOn = true;
+        AlertDialog.Builder builder = new AlertDialog.Builder(GalleryGrid.this);
+        builder.setTitle("Filter by Time");
+        builder.setItems(new CharSequence[]
+                        {"Start Date", "End Date", "Apply"},
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // The 'which' argument contains the index position
+                        // of the selected item
+                        switch (which) {
+                            case 0:
+                                showCalenderStart(curYear, curtDay, curMonth);
+                                Log.e("PICK_START_DATE", "   START:  " + (startMonth + 1) + "-" + startDay + "-" + startYear);
+                                break;
+                            case 1:
+                                showCalenderEnd(curYear, curtDay, curMonth);
+                                Log.e("PICK_END_DATE", "   END:  " + (endMonth + 1) +  "-" + endDay + "-" + endYear);
+                                break;
+                            case 2:
+                                break;
+                        }
+                    }
+                });
+        builder.create().show();
+    }
+
+
+
+    void showCalenderStart(int year, int day, int month) {
+        // show today
+        DatePickerDialog dp = new DatePickerDialog(GalleryGrid.this, new DatePickerDialog.OnDateSetListener() {
+            public void onDateSet(DatePicker datepicker, int year, int month, int day) {
+                setStartDate(month, day, year);
+            }
+        }, startYear, startMonth, startDay);
+
+        dp.setTitle("Select Start Date");
+        dp.show();
+
+    }
+
+
+
+    void showCalenderEnd(int year, int day, int month) {
+        DatePickerDialog dp = new DatePickerDialog(GalleryGrid.this, new DatePickerDialog.OnDateSetListener() {
+            public void onDateSet(DatePicker datepicker, int year, int month, int day) {
+                setEndDate(month, day, year );
+            }
+        }, endYear, endMonth, endDay);
+
+        dp.setTitle("Select End Date");
+        dp.show();
+
+
+    }
+
+
+    /*public void filterTime(MenuItem item) {
         this.timeFilterOn = true;
         Intent intent = new Intent(this, DateActivity.class);
-        intent.putExtra("MONTH", "" + month);
-        intent.putExtra("DAY", "" + day);
-        intent.putExtra("YEAR", "" + year);
+        intent.putExtra("MONTH", "" + curMonth);
+        intent.putExtra("DAY", "" + curtDay);
+        intent.putExtra("YEAR", "" + curYear);
         startActivity(intent);
-    }
+
+    }*/
 
 
     public void filterCaption(MenuItem item) {
         this.captionFilterOn = true;
         final TagDialog td = new TagDialog();
+        td.show(getFragmentManager(), "Dialog");
+
+        thread = new Thread () {
+
+            @Override
+            public void run () {
+                while (td.getStatus ().equals ("") || td.getStatus ().equals ("waiting"));
+                Log.e (":)", td.getStatus());
+                if (td.getStatus().equals ("search")) {
+                    final ArrayList<CreateList> imgs = prepareDataCaption();
+                    Log.e (":)", "" + imgs.size());
+                    runOnUiThread(new Runnable () {
+
+                        @Override
+                        public void run () {
+                            refreshGallery(imgs);
+                        }
+
+                    });
+                }
+            }
+        };
+        thread.start();
+    }
+
+
+
+
+    public void filterLocation(MenuItem item) {
+        this.captionFilterOn = true;
+        final LocationDialog td = new LocationDialog();
         td.show(getFragmentManager(), "Dialog");
 
         thread = new Thread () {
@@ -199,14 +297,9 @@ public class GalleryGrid extends AppCompatActivity {
         thread.start();
     }
 
-    /*
-
-     */
-
-
-    public void filterLocation(MenuItem item) {
+    /*public void filterLocation(MenuItem item) {
         this.locationFilterOn = true;
-    }
+    }*/
 
 
     private ArrayList<CreateList> prepareDataCaption(){
@@ -286,4 +379,61 @@ public class GalleryGrid extends AppCompatActivity {
         return imageList;
     }
 
+
+    private void refreshGallery(ArrayList<CreateList> imgs) {
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 3);
+        rv.setLayoutManager(layoutManager);
+
+        adapter = new RecyclerViewAdapter(getApplicationContext(), imgs);
+        rv.setAdapter(adapter);
+    }
+
+
+    public void setStartDate(int month, int day, int year) {
+        startYear = year;
+        startMonth = month;
+        startDay = day;
+    }
+
+
+    public void setEndDate(int month, int day, int year) {
+        endYear = year;
+        endMonth = month;
+        endDay = day;
+    }
+
+
+
+    /*public void filterTime(MenuItem item) {
+        this.captionFilterOn = true;
+        final TimeDialog td = new TimeDialog();
+        td.show(getFragmentManager(), "Dialog");
+
+        thread = new Thread () {
+
+            @Override
+            public void run () {
+                while (td.getStatus ().equals ("") || td.getStatus ().equals ("waiting"));
+                Log.e (":)", td.getStatus());
+                if (td.getStatus().equals ("search")) {
+                    final ArrayList<CreateList> imgs = prepareDataCaption();
+                    Log.e (":)", "" + imgs.size());
+                    runOnUiThread(new Runnable () {
+
+                        @Override
+                        public void run () {
+
+                            RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 3);
+                            rv.setLayoutManager(layoutManager);
+
+                            adapter = new RecyclerViewAdapter(getApplicationContext(), imgs);
+                            rv.setAdapter(adapter);
+                        }
+
+                    });
+                }
+            }
+        };
+        thread.start();
+    }*/
 }

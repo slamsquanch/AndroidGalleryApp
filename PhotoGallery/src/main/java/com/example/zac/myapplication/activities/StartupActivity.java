@@ -261,7 +261,7 @@ public class StartupActivity extends AppCompatActivity {
     public void viewGallery(View view) {
         setDate();
         Intent intent = new Intent(this, GalleryGrid.class);
-        intent.putExtra("MONTH", "" + month);
+        intent.putExtra("MONTH", "" + (month - 1));
         intent.putExtra("DAY", "" + day);
         intent.putExtra("YEAR", "" + year);
         Log.d("", "BEFORE SWITCH INTENT");

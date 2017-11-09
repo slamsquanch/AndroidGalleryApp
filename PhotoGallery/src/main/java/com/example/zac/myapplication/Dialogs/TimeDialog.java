@@ -1,6 +1,7 @@
 package com.example.zac.myapplication.Dialogs;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.app.DialogFragment;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -9,15 +10,17 @@ import android.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.EditText;
 
 import com.example.zac.myapplication.R;
+import com.example.zac.myapplication.activities.DateActivity;
 
 /**
  * Created by Zac Koop on 2017-11-02.
  */
 
-public class TagDialog extends DialogFragment {
+public class TimeDialog extends DialogFragment {
 
     private String status = "";
     public static String search_text = "";
@@ -31,7 +34,7 @@ public class TagDialog extends DialogFragment {
 
         LayoutInflater inflater = activity.getLayoutInflater();
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        DatePickerDialog.Builder builder = new DatePickerDialog.Builder(activity);
 
         status = "waiting";
 
@@ -40,7 +43,7 @@ public class TagDialog extends DialogFragment {
         final View v = inflater.inflate(R.layout.dialog_tag_search, null);
         builder.setView(v)
                 // Add action buttons
-                .setPositiveButton("Search", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Time", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         // sign in the user ...
@@ -57,6 +60,21 @@ public class TagDialog extends DialogFragment {
                         status = "cancelled";
                     }
                 });
+
+
+
+
+        /*DatePickerDialog dp = new DatePickerDialog(DateActivity.this, new DatePickerDialog.OnDateSetListener() {
+            public void onDateSet(DatePicker datepicker, int year, int month, int day) {
+                startMonth = month;
+                startDay = day;
+                startYear = year;
+            }
+        }, year, month, day);*/
+
+        builder.setTitle("Select date");
+        //builder.show();
+        //Log.d("PICK_START_DATE", "   START:  " + startMonth + "-" + startDay + "-" + startYear);
 
         return builder.create();
 
