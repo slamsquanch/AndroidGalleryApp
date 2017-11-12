@@ -8,20 +8,32 @@
 
     <item
         android:id="@+id/filter_caption"
-        android:icon="@drawable/ic_menu_share"
-        android:title="Caption"
-        android:onClick="filterCaption" />
+        android:checkable="false"
+        android:onClick="filterCaption"
+        android:title="Caption" />
 
     <item
-        android:id="@+id/filter_time"
-        android:icon="@drawable/ic_menu_camera"
-        android:title="DateTime"
-        android:onClick="filterTime"/>
+        android:id="@+id/filter_time_start"
+        android:checkable="false"
+        android:onClick="filterStartDate"
+        android:title="Start Date" />
+
+    <item
+        android:id="@+id/filter_time_end"
+        android:checkable="false"
+        android:onClick="filterEndDate"
+        android:title="End Date" />
 
     <item
         android:id="@+id/filter_location"
-        android:icon="@drawable/ic_menu_gallery"
-        android:title="Location"
-        android:onClick="filterLocation"/>
+        android:checkable="false"
+        android:onClick="filterLocation"
+        android:title="Location" />
+
+    <item
+        android:id="@+id/filters_reset"
+        android:checkable="false"
+        android:onClick="resetFilters"
+        android:title="Reset All" />
 
 </menu>

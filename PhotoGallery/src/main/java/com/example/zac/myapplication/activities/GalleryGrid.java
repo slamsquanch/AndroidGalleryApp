@@ -3,6 +3,7 @@ package com.example.zac.myapplication.activities;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import java.util.StringTokenizer;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -16,14 +17,11 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
 
-import com.example.zac.myapplication.Dialogs.LocationDialog;
-import com.example.zac.myapplication.Dialogs.TagDialog;
 import com.example.zac.myapplication.R;
 import com.example.zac.myapplication.classes.CreateList;
 import com.example.zac.myapplication.classes.Image;
@@ -37,10 +35,11 @@ import java.util.ArrayList;
 public class GalleryGrid extends AppCompatActivity {
 
     private TextView mTextMessage;
-    private boolean timeFilterOn = false;
+    private boolean startDateOn = false, endDateOn = false;
     private boolean captionFilterOn = false;
     private boolean locationFilterOn = false;
-    private int curMonth, curtDay, curYear;   // used for TimeStamps
+    private String caption = null;
+    private int curMonth, curDay, curYear;   // used for TimeStamps
     private int startYear, startMonth, startDay, endYear, endMonth, endDay;
     private Thread thread;
     private RecyclerView rv;
@@ -111,15 +110,15 @@ public class GalleryGrid extends AppCompatActivity {
 
         Intent intent = getIntent();
         curMonth = Integer.parseInt(intent.getStringExtra("MONTH"));
-        curtDay = Integer.parseInt(intent.getStringExtra("DAY"));
+        curDay = Integer.parseInt(intent.getStringExtra("DAY"));
         curYear = Integer.parseInt(intent.getStringExtra("YEAR"));
 
-        this.startMonth = curMonth;
-        this.startDay = curtDay;
-        this.startYear = curYear;
-        this.endMonth = curMonth;
-        this.endDay = curtDay;
-        this.endYear = curYear;
+        startMonth = -1;
+        startDay = -1;
+        startYear = -1;
+        endMonth = -1;
+        endDay = -1;
+        endYear = -1;
 
         if (intent != null) {
             mTextMessage = (TextView) findViewById(R.id.message);
@@ -164,8 +163,7 @@ public class GalleryGrid extends AppCompatActivity {
 
 
 
-    public void filterTime(MenuItem item) {
-        timeFilterOn = true;
+    /*public void filterTime(MenuItem item) {
         AlertDialog.Builder builder = new AlertDialog.Builder(GalleryGrid.this);
         builder.setTitle("Filter by Time");
         builder.setItems(new CharSequence[]
@@ -176,12 +174,20 @@ public class GalleryGrid extends AppCompatActivity {
                         // of the selected item
                         switch (which) {
                             case 0:
-                                showCalenderStart(curYear, curtDay, curMonth);
                                 Log.e("PICK_START_DATE", "   START:  " + (startMonth + 1) + "-" + startDay + "-" + startYear);
+                                //showCalenderStart(curYear, curDay, curMonth);
+                                DatePickerDialog dp = new DatePickerDialog(GalleryGrid.this, new DatePickerDialog.OnDateSetListener() {
+                                    public void onDateSet(DatePicker datepicker, int year, int month, int day) {
+                                        setStartDate(month, day, year);
+                                    }
+                                }, curYear, curMonth, curDay);
+
+                                dp.setTitle("Select Start Date");
+                                dp.show();
                                 break;
                             case 1:
-                                showCalenderEnd(curYear, curtDay, curMonth);
                                 Log.e("PICK_END_DATE", "   END:  " + (endMonth + 1) +  "-" + endDay + "-" + endYear);
+                                showCalenderEnd(curYear, curDay, curMonth);
                                 break;
                             case 2:
                                 break;
@@ -189,17 +195,45 @@ public class GalleryGrid extends AppCompatActivity {
                     }
                 });
         builder.create().show();
+    }*/
+
+
+    public void filterStartDate(MenuItem item) {
+        Log.e("PICK_START_DATE", "   START:  " + (startMonth + 1) + "-" + startDay + "-" + startYear);
+        DatePickerDialog dp = new DatePickerDialog(GalleryGrid.this, new DatePickerDialog.OnDateSetListener() {
+            public void onDateSet(DatePicker datepicker, int year, int month, int day) {
+                setStartDate(month, day, year);
+            }
+        }, curYear, curMonth, curDay);
+
+        dp.setTitle("Select Start Date");
+        dp.show();
     }
 
 
 
-    void showCalenderStart(int year, int day, int month) {
+
+    public void filterEndDate(MenuItem item) {
+        Log.e("PICK_END_DATE", "   END:  " + (endMonth + 1) +  "-" + endDay + "-" + endYear);
+        DatePickerDialog dp = new DatePickerDialog(GalleryGrid.this, new DatePickerDialog.OnDateSetListener() {
+            public void onDateSet(DatePicker datepicker, int year, int month, int day) {
+                setEndDate(month, day, year );
+            }
+        }, curYear, curMonth, curDay);
+
+        dp.setTitle("Select End Date");
+        dp.show();
+    }
+
+
+
+    /*void showCalenderStart(int year, int day, int month) {
         // show today
         DatePickerDialog dp = new DatePickerDialog(GalleryGrid.this, new DatePickerDialog.OnDateSetListener() {
             public void onDateSet(DatePicker datepicker, int year, int month, int day) {
                 setStartDate(month, day, year);
             }
-        }, startYear, startMonth, startDay);
+        }, curYear, curMonth, curDay);
 
         dp.setTitle("Select Start Date");
         dp.show();
@@ -213,88 +247,57 @@ public class GalleryGrid extends AppCompatActivity {
             public void onDateSet(DatePicker datepicker, int year, int month, int day) {
                 setEndDate(month, day, year );
             }
-        }, endYear, endMonth, endDay);
+        }, curYear, curMonth, curDay);
 
         dp.setTitle("Select End Date");
         dp.show();
-
-
-    }
-
-
-    /*public void filterTime(MenuItem item) {
-        this.timeFilterOn = true;
-        Intent intent = new Intent(this, DateActivity.class);
-        intent.putExtra("MONTH", "" + curMonth);
-        intent.putExtra("DAY", "" + curtDay);
-        intent.putExtra("YEAR", "" + curYear);
-        startActivity(intent);
-
     }*/
 
 
+
+
     public void filterCaption(MenuItem item) {
-        this.captionFilterOn = true;
-        final TagDialog td = new TagDialog();
-        td.show(getFragmentManager(), "Dialog");
+        final EditText searchedTag = new EditText(this);
 
-        thread = new Thread () {
+        // Set the default text to a link of the Queen
+        //txtUrl.setHint("http://www.librarising.com/astrology/celebs/images2/QR/queenelizabethii.jpg");
 
-            @Override
-            public void run () {
-                while (td.getStatus ().equals ("") || td.getStatus ().equals ("waiting"));
-                Log.e (":)", td.getStatus());
-                if (td.getStatus().equals ("search")) {
-                    final ArrayList<CreateList> imgs = prepareDataCaption();
-                    Log.e (":)", "" + imgs.size());
-                    runOnUiThread(new Runnable () {
-
-                        @Override
-                        public void run () {
-                            refreshGallery(imgs);
-                        }
-
-                    });
-                }
-            }
-        };
-        thread.start();
+        new AlertDialog.Builder(this)
+                .setTitle("Filter Caption")
+                .setMessage("search for tags")
+                .setView(searchedTag)
+                .setPositiveButton("Apply", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        String tag = searchedTag.getText().toString();
+                        setCaption(tag);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                    }
+                })
+                .show();
     }
 
+
+    private void setCaption(String tag) {
+        if (!tag.equals(""))
+            this.captionFilterOn = true;
+        else
+            this.captionFilterOn = false;
+        this.caption = tag.toUpperCase();
+        Log.e("SEARCH_TAG", "CAPTION_BOOL:  " + captionFilterOn);
+        Log.e("SEARCH_TAG", "SEARCH_TAG:  " + tag);
+        ArrayList<CreateList> createLists = prepareData();
+
+        refreshGallery(createLists);
+    }
 
 
 
     public void filterLocation(MenuItem item) {
         this.captionFilterOn = true;
-        final LocationDialog td = new LocationDialog();
-        td.show(getFragmentManager(), "Dialog");
 
-        thread = new Thread () {
-
-            @Override
-            public void run () {
-                while (td.getStatus ().equals ("") || td.getStatus ().equals ("waiting"));
-                Log.e (":)", td.getStatus());
-                if (td.getStatus().equals ("search")) {
-                    final ArrayList<CreateList> imgs = prepareDataCaption();
-                    Log.e (":)", "" + imgs.size());
-                    runOnUiThread(new Runnable () {
-
-                        @Override
-                        public void run () {
-
-                            RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 3);
-                            rv.setLayoutManager(layoutManager);
-
-                            adapter = new RecyclerViewAdapter(getApplicationContext(), imgs);
-                            rv.setAdapter(adapter);
-                        }
-
-                    });
-                }
-            }
-        };
-        thread.start();
     }
 
     /*public void filterLocation(MenuItem item) {
@@ -302,82 +305,144 @@ public class GalleryGrid extends AppCompatActivity {
     }*/
 
 
-    private ArrayList<CreateList> prepareDataCaption(){
-
-        ArrayList<CreateList> imageList = new ArrayList<>();
-
-        ArrayList<Image> dbImages = DBHelper.getInstance(getApplicationContext()).filterCaption(TagDialog.search_text);
-        Log.e (":)", "" + dbImages.size());
-        for(int i = 0; i < dbImages.size(); i ++) {
-            Log.d("dbIMAGE", "   ID: " + dbImages.get(i).getID() + "   DATE: " + dbImages.get(i).getTimeStamp());
-        }
-
-        //}
-        for(int i = 0; i < dbImages.size(); i++) {
-            CreateList createList = new CreateList();
-            // get image tag
-            createList.setImgName(dbImages.get(i).getCaption());
-            createList.setImgID(dbImages.get(i).getID());
-            // URI
-            Uri uri = Uri.parse(dbImages.get(i).getUri());
-            Bitmap thumbnail = null;
-            try {
-                InputStream stream = getContentResolver().openInputStream(uri);
-                thumbnail = BitmapFactory.decodeStream(stream );
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            createList.setImgBitmap(thumbnail);
-            imageList.add(createList);
-        }
-        return imageList;
-    }
-
 
     private ArrayList<CreateList> prepareData(){
 
         ArrayList<CreateList> imageList = new ArrayList<>();
-        /*for(int i = 0; i < imgNames.length; i++){   // DUMMY DATA loop
-            CreateList createList = new CreateList();
-            createList.setImgName(imgNames[i]);
-            createList.setImgID(imgIDs[i]);
-            imageList.add(createList);
-        }
-        return theimage;*/
 
         ArrayList<Image> dbImages = DBHelper.getInstance(this).getGallery();
         for(int i = 0; i < dbImages.size(); i ++) {
             Log.d("dbIMAGE", "   ID: " + dbImages.get(i).getID() + "   DATE: " + dbImages.get(i).getTimeStamp());
         }
 
-        /*if (dbImages.size() == 0) {     // empty placeholders if I feel like it.
-            for(int i = 0; i < 9; i++){
-            createList.setImgName("empty");
-            createList.setImgID( R.drawable.placeholder);
-            imageList.add(createList);
-        }*/
-        //}
 
-        for(int i = 0; i < dbImages.size(); i++) {
-            CreateList createList = new CreateList();
-            // get image tag
-            createList.setImgName(dbImages.get(i).getCaption());
-            createList.setImgID(dbImages.get(i).getID());
-            // URI
-            Uri uri = Uri.parse(dbImages.get(i).getUri());
-            Bitmap thumbnail = null;
-            try {
-                InputStream stream = getContentResolver().openInputStream(uri);
-                thumbnail = BitmapFactory.decodeStream(stream );
-            } catch (IOException e) {
-                e.printStackTrace();
+        // IF Tag Filter is the only filter being used.
+        if (captionFilterOn && !startDateOn && !endDateOn) {
+            for(int i = 0; i < dbImages.size(); i++) {
+                CreateList createList = new CreateList();
+
+                // Tokenize the caption by space to get multiple tags for each photo.
+                String str = dbImages.get(i).getCaption();
+                String[] splitStr = str.trim().split("\\s+");
+
+                for (String token: splitStr) {
+                    //Log.e("TOKENS", "TOKEN: " + token);
+                    if (caption.equals(token.toUpperCase())) {
+                        // get image tag
+                        createList.setImgName(dbImages.get(i).getCaption());
+                        createList.setImgID(dbImages.get(i).getID());
+                        // URI
+                        Uri uri = Uri.parse(dbImages.get(i).getUri());
+                        Bitmap thumbnail = null;
+                        try {
+                            InputStream stream = getContentResolver().openInputStream(uri);
+                            thumbnail = BitmapFactory.decodeStream(stream);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        createList.setImgBitmap(thumbnail);
+                        imageList.add(createList);
+                    }
+                }
             }
-            createList.setImgBitmap(thumbnail);
-            imageList.add(createList);
+            return imageList;
+        }
 
+
+
+        else if (startDateOn && endDateOn && !captionFilterOn) {
+            // IF ONLY DATE Filter is being used
+            Log.e("DateFiler_PrepareData", "INSIDE DATE_FILTER LOOP");
+            for (int i = 0; i < dbImages.size(); i++) {
+                CreateList createList = new CreateList();
+
+                if (compareStartTimestamp(dbImages.get(i).getTimeStamp(),
+                        startMonth, startDay, startYear) && compareEndTimestamp(dbImages.get(i).getTimeStamp(),
+                        endMonth, endDay, endYear)) {
+                    // get image tag
+                    createList.setImgName(dbImages.get(i).getCaption());
+                    createList.setImgID(dbImages.get(i).getID());
+                    // URI
+                    Uri uri = Uri.parse(dbImages.get(i).getUri());
+                    Bitmap thumbnail = null;
+                    try {
+                        InputStream stream = getContentResolver().openInputStream(uri);
+                        thumbnail = BitmapFactory.decodeStream(stream);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    createList.setImgBitmap(thumbnail);
+                    imageList.add(createList);
+
+                }
+            }
+            return imageList;
+        }
+
+
+
+        // IF Tag AND Date Filters are being used
+        else if (startDateOn && endDateOn && captionFilterOn) {
+            // IF ONLY DATE Filter is being used
+            Log.e("DateFiler_PrepareData", "INSIDE DATE_FILTER LOOP");
+            for (int i = 0; i < dbImages.size(); i++) {
+                CreateList createList = new CreateList();
+
+                String str = dbImages.get(i).getCaption();
+                String[] splitStr = str.trim().split("\\s+");
+
+                for (String token: splitStr) {
+                    //Log.e("TOKENS", "TOKEN: " + token);
+                    if (caption.equals(token.toUpperCase())) {
+                        if (compareStartTimestamp(dbImages.get(i).getTimeStamp(),
+                                startMonth, startDay, startYear) && compareEndTimestamp(dbImages.get(i).getTimeStamp(),
+                                endMonth, endDay, endYear)) {
+                            // get image tag
+                            createList.setImgName(dbImages.get(i).getCaption());
+                            createList.setImgID(dbImages.get(i).getID());
+                            // URI
+                            Uri uri = Uri.parse(dbImages.get(i).getUri());
+                            Bitmap thumbnail = null;
+                            try {
+                                InputStream stream = getContentResolver().openInputStream(uri);
+                                thumbnail = BitmapFactory.decodeStream(stream);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            createList.setImgBitmap(thumbnail);
+                            imageList.add(createList);
+                        }
+                    }
+                }
+            }
+            return imageList;
+        }
+
+    else {
+            // IF nothing is being used.
+            for (int i = 0; i < dbImages.size(); i++) {
+                CreateList createList = new CreateList();
+                // get image tag
+                createList.setImgName(dbImages.get(i).getCaption());
+                createList.setImgID(dbImages.get(i).getID());
+                // URI
+                Uri uri = Uri.parse(dbImages.get(i).getUri());
+                Bitmap thumbnail = null;
+                try {
+                    InputStream stream = getContentResolver().openInputStream(uri);
+                    thumbnail = BitmapFactory.decodeStream(stream);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                createList.setImgBitmap(thumbnail);
+                imageList.add(createList);
+
+            }
         }
         return imageList;
+
     }
+
 
 
     private void refreshGallery(ArrayList<CreateList> imgs) {
@@ -389,51 +454,100 @@ public class GalleryGrid extends AppCompatActivity {
     }
 
 
+
+    /*
+     * Returns true if the A) image date comes after OR during the  B) Filter starting date.
+     */
+    boolean compareStartTimestamp(String imgDate, int cmpMonth, int cmpDay, int cmpYear) {
+        String str = imgDate;
+        String[] splitStr = str.trim().split("-");
+        int month = Integer.parseInt(splitStr[0]);
+        int day = Integer.parseInt(splitStr[1]);
+        int year = Integer.parseInt(splitStr[2]);
+        Log.e("COMPARE_ST_DATE", "Parsed start date(mm-dd-yy): " + month + "-" + day + "-" + year);
+        Log.e("COMPARE_ST_DATE", "cmp start date(mm-dd-yy): " + cmpMonth + "-" + cmpDay + "-" + cmpYear);
+
+        //Log.e("COMPARE_ST_DATE", "start date comaprison: " + (year >= cmpYear && month > cmpMonth && day > cmpDay));
+        if (year > cmpYear)
+            return true;
+        if (year == cmpYear)
+            if (month > cmpMonth)
+                return true;
+            else if (month == cmpMonth)
+                if (day >= cmpDay)
+                    return true;
+        Log.e("COMPARE_ST_DATE", "start date comaprison: BAD NEWS BEARS");
+        return false;
+    }
+
+
+
+    /*
+     * Returns true if the A) image date comes before OR during the  B) Filter ending date.
+     */
+    boolean compareEndTimestamp(String imgDate, int cmpMonth, int cmpDay, int cmpYear) {
+        String str = imgDate;
+        String[] splitStr = str.trim().split("-");
+        int month = Integer.parseInt(splitStr[0]);
+        int day = Integer.parseInt(splitStr[1]);
+        int year = Integer.parseInt(splitStr[2]);
+        Log.e("COMPARE_END_DATE", "Parsed end date(mm-dd-yy): " + month + "-" + day + "-" + year);
+        Log.e("COMPARE_END_DATE", "cmp end date(mm-dd-yy): " + cmpMonth + "-" + cmpDay + "-" + cmpYear);
+
+        //Log.e("COMPARE_END_DATE", "end date comaprison: " + (year <= cmpYear && month < cmpMonth && day < cmpDay));
+        if (year < cmpYear)
+            return true;
+        if (year == cmpYear)
+            if (month < cmpMonth)
+                return true;
+            else if (month == cmpMonth)
+                if (day <= cmpDay)
+                    return true;
+        Log.e("COMPARE_END_DATE", "end date comaprison: BAD NEWS BEARS");
+        return false;
+    }
+
+
+
     public void setStartDate(int month, int day, int year) {
         startYear = year;
-        startMonth = month;
+        startMonth = month + 1;
         startDay = day;
+        this.startDateOn = true;
+
+        if (this.endDateOn) {
+            ArrayList<CreateList> createLists = prepareData();
+            refreshGallery(createLists);
+        }
     }
 
 
     public void setEndDate(int month, int day, int year) {
         endYear = year;
-        endMonth = month;
+        endMonth = month + 1;
         endDay = day;
+        this.endDateOn = true;
+
+        if (this.startDateOn) {
+            ArrayList<CreateList> createLists = prepareData();
+            refreshGallery(createLists);
+        }
     }
 
 
 
-    /*public void filterTime(MenuItem item) {
-        this.captionFilterOn = true;
-        final TimeDialog td = new TimeDialog();
-        td.show(getFragmentManager(), "Dialog");
-
-        thread = new Thread () {
-
-            @Override
-            public void run () {
-                while (td.getStatus ().equals ("") || td.getStatus ().equals ("waiting"));
-                Log.e (":)", td.getStatus());
-                if (td.getStatus().equals ("search")) {
-                    final ArrayList<CreateList> imgs = prepareDataCaption();
-                    Log.e (":)", "" + imgs.size());
-                    runOnUiThread(new Runnable () {
-
-                        @Override
-                        public void run () {
-
-                            RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 3);
-                            rv.setLayoutManager(layoutManager);
-
-                            adapter = new RecyclerViewAdapter(getApplicationContext(), imgs);
-                            rv.setAdapter(adapter);
-                        }
-
-                    });
-                }
-            }
-        };
-        thread.start();
-    }*/
+    public void resetFilters(MenuItem item) {
+        this.captionFilterOn = false;
+        this.caption = "";
+        this.startDateOn = false;
+        this.endDateOn = false;
+        startMonth = -1;
+        startDay = -1;
+        startYear = -1;
+        endMonth = -1;
+        endDay = -1;
+        endYear = -1;
+        ArrayList<CreateList> createLists = prepareData();
+        refreshGallery(createLists);
+    }
 }
