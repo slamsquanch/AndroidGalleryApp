@@ -63,7 +63,7 @@ public class PreviewImageLarge extends AppCompatActivity implements LocationList
         Intent intent = getIntent();
         if (intent != null) {
             String message = intent.getStringExtra("URI");
-            message = intent.getStringExtra("URI_CAMERA");
+            //message = intent.getStringExtra("URI_CAMERA");
             currentURI = Uri.parse(message);
             Bitmap thumbnail = null;
             try {

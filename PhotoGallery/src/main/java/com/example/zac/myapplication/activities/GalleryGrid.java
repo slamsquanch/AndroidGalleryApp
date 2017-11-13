@@ -59,6 +59,7 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
     private RecyclerViewAdapter adapter;
     private LocationManager locationManager;
     private double startLat = 100, startLong = 200, endLat = 100, endLong = 200;
+    private double latCenter = 0, longCenter = 0;
     private final int START_PICKER_REQUEST = 1;
     private final int END_PICKER_REQUEST = 2;
     //private MenuItem pickDate = null;
@@ -105,7 +106,7 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
 
         if (intent != null) {
             mTextMessage = (TextView) findViewById(R.id.message);
-            rv = (RecyclerView) findViewById(R.id.imagegallery);
+            rv = (RecyclerView) findViewById(R.id.gallery);
             rv.setHasFixedSize(true);
             ArrayList<CreateList> createLists = prepareData();
 
@@ -126,14 +127,6 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
             //pickDate = (MenuItem) findViewById(R.id.filter_location);
 
         }
-
-        /*Uri uri = Uri.parse("android.resource://com.example.zac.myapplication.activities/drawable/starwars.jpg");
-        try {
-            InputStream stream = getContentResolver().openInputStream(uri);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }*/
-
     }
 
 
@@ -150,7 +143,7 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
      * Start date selecter dailog for the date filter.
      */
     public void filterStartDate(MenuItem item) {
-        Log.e("PICK_START_DATE", "   START:  " + (startMonth + 1) + "-" + startDay + "-" + startYear);
+        //Log.e("PICK_START_DATE", "   START:  " + (startMonth + 1) + "-" + startDay + "-" + startYear);
         DatePickerDialog dp = new DatePickerDialog(GalleryGrid.this, new DatePickerDialog.OnDateSetListener() {
             public void onDateSet(DatePicker datepicker, int year, int month, int day) {
                 setStartDate(month, day, year);
@@ -167,7 +160,7 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
      * End date selecter dialog for the date filter.
      */
     public void filterEndDate(MenuItem item) {
-        Log.e("PICK_END_DATE", "   END:  " + (endMonth + 1) +  "-" + endDay + "-" + endYear);
+        //Log.e("PICK_END_DATE", "   END:  " + (endMonth + 1) +  "-" + endDay + "-" + endYear);
         DatePickerDialog dp = new DatePickerDialog(GalleryGrid.this, new DatePickerDialog.OnDateSetListener() {
             public void onDateSet(DatePicker datepicker, int year, int month, int day) {
                 setEndDate(month, day, year );
@@ -212,7 +205,7 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
     /*
      * Set the caption and activate the caption filter.
     */
-    private void setCaption(String tag) {
+    public void setCaption(String tag) {
         if (!tag.equals(""))
             this.captionFilterOn = true;
         else
@@ -238,7 +231,7 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
      *                    this method also does all of the filtering.
      */
     private ArrayList<CreateList> prepareData(){
-
+        Log.e("LocationBool", "Location Bool: startOn: " + startLocationOn + ", endOn: " + endLocationOn);
         ArrayList<CreateList> imageList = new ArrayList<>();
 
         ArrayList<Image> dbImages = DBHelper.getInstance(this).getGallery();
@@ -246,9 +239,8 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
             Log.d("dbIMAGE", "   ID: " + dbImages.get(i).getID() + "   DATE: " + dbImages.get(i).getTimeStamp());
         }
 
-
         // IF Tag Filter is the only filter being used.
-        if (captionFilterOn && !startDateOn && !endDateOn) {
+        if (captionFilterOn && !startDateOn && !endDateOn && !startLocationOn && !endLocationOn) {
             for(int i = 0; i < dbImages.size(); i++) {
                 CreateList createList = new CreateList();
 
@@ -259,30 +251,15 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
                 for (String token: splitStr) {
                     //Log.e("TOKENS", "TOKEN: " + token);
                     if (caption.equals(token.toUpperCase())) {
-                        // get image tag
-                        createList.setImgName(dbImages.get(i).getCaption());
-                        createList.setImgID(dbImages.get(i).getID());
-                        // URI
-                        Uri uri = Uri.parse(dbImages.get(i).getUri());
-                        Bitmap thumbnail = null;
-                        try {
-                            InputStream stream = getContentResolver().openInputStream(uri);
-                            thumbnail = BitmapFactory.decodeStream(stream);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        createList.setImgBitmap(thumbnail);
-                        imageList.add(createList);
+                        loadData(imageList, dbImages, createList, i);
                     }
                 }
             }
             return imageList;
         }
 
-
-
-        else if (startDateOn && endDateOn && !captionFilterOn) {
-            // IF ONLY DATE Filter is being used
+        // IF ONLY DATE Filter is being used
+        else if (startDateOn && endDateOn && !captionFilterOn && !startLocationOn && !endLocationOn) {
             Log.e("DateFiler_PrepareData", "INSIDE DATE_FILTER LOOP");
             for (int i = 0; i < dbImages.size(); i++) {
                 CreateList createList = new CreateList();
@@ -290,31 +267,15 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
                 if (compareStartTimestamp(dbImages.get(i).getTimeStamp(),
                         startMonth, startDay, startYear) && compareEndTimestamp(dbImages.get(i).getTimeStamp(),
                         endMonth, endDay, endYear)) {
-                    // get image tag
-                    createList.setImgName(dbImages.get(i).getCaption());
-                    createList.setImgID(dbImages.get(i).getID());
-                    // URI
-                    Uri uri = Uri.parse(dbImages.get(i).getUri());
-                    Bitmap thumbnail = null;
-                    try {
-                        InputStream stream = getContentResolver().openInputStream(uri);
-                        thumbnail = BitmapFactory.decodeStream(stream);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    createList.setImgBitmap(thumbnail);
-                    imageList.add(createList);
+                    loadData(imageList, dbImages, createList, i);
 
                 }
             }
             return imageList;
         }
 
-
-
-
         // IF Tag AND Date Filters are being used
-        else if (startDateOn && endDateOn && captionFilterOn) {
+        else if (startDateOn && endDateOn && captionFilterOn && !startLocationOn && !endLocationOn) {
             // IF ONLY DATE Filter is being used
             Log.e("DateFiler_PrepareData", "INSIDE DATE_FILTER LOOP");
             for (int i = 0; i < dbImages.size(); i++) {
@@ -329,20 +290,7 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
                         if (compareStartTimestamp(dbImages.get(i).getTimeStamp(),
                                 startMonth, startDay, startYear) && compareEndTimestamp(dbImages.get(i).getTimeStamp(),
                                 endMonth, endDay, endYear)) {
-                            // get image tag
-                            createList.setImgName(dbImages.get(i).getCaption());
-                            createList.setImgID(dbImages.get(i).getID());
-                            // URI
-                            Uri uri = Uri.parse(dbImages.get(i).getUri());
-                            Bitmap thumbnail = null;
-                            try {
-                                InputStream stream = getContentResolver().openInputStream(uri);
-                                thumbnail = BitmapFactory.decodeStream(stream);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            createList.setImgBitmap(thumbnail);
-                            imageList.add(createList);
+                            loadData(imageList, dbImages, createList, i);
                         }
                     }
                 }
@@ -350,28 +298,109 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
             return imageList;
         }
 
-    else {
-            // IF nothing is being used.
+        // If ONLY Location filter is being used.
+        else if (startLocationOn && endLocationOn && !captionFilterOn && !startDateOn && !endDateOn) {
             for (int i = 0; i < dbImages.size(); i++) {
                 CreateList createList = new CreateList();
-                // get image tag
-                createList.setImgName(dbImages.get(i).getCaption());
-                createList.setImgID(dbImages.get(i).getID());
-                // URI
-                Uri uri = Uri.parse(dbImages.get(i).getUri());
-                Bitmap thumbnail = null;
-                try {
-                    InputStream stream = getContentResolver().openInputStream(uri);
-                    thumbnail = BitmapFactory.decodeStream(stream);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                createList.setImgBitmap(thumbnail);
-                imageList.add(createList);
 
+                if (isWithinLocation(dbImages.get(i).getLatitude(), dbImages.get(i).getLongitude())) {
+                    loadData(imageList, dbImages, createList, i);
+                }
             }
+            return imageList;
         }
-        return imageList;
+
+        // If Location AND Tag filters are being used.
+        else if (startLocationOn && endLocationOn && captionFilterOn && !startDateOn && !endDateOn) {
+            for (int i = 0; i < dbImages.size(); i++) {
+                CreateList createList = new CreateList();
+
+                String str = dbImages.get(i).getCaption();
+                String[] splitStr = str.trim().split("\\s+");
+
+                for (String token: splitStr) {
+                    //Log.e("TOKENS", "TOKEN: " + token);
+                    if (caption.equals(token.toUpperCase())) {
+                        if (isWithinLocation(dbImages.get(i).getLatitude(), dbImages.get(i).getLongitude())) {
+                            loadData(imageList, dbImages, createList, i);
+                        }
+                    }
+                }
+            }
+            return imageList;
+        }
+
+        // If Location AND Date filters are being used.
+        else if (startLocationOn && endLocationOn && !captionFilterOn && startDateOn && endDateOn) {
+            for (int i = 0; i < dbImages.size(); i++) {
+                CreateList createList = new CreateList();
+
+                if (isWithinLocation(dbImages.get(i).getLatitude(), dbImages.get(i).getLongitude())) {
+                    if (compareStartTimestamp(dbImages.get(i).getTimeStamp(),
+                            startMonth, startDay, startYear) && compareEndTimestamp(dbImages.get(i).getTimeStamp(),
+                            endMonth, endDay, endYear)) {
+                        loadData(imageList, dbImages, createList, i);
+                    }
+                }
+            }
+            return imageList;
+        }
+
+        // If ALL FILTERS are being used.
+        else if (startLocationOn && endLocationOn && captionFilterOn && startDateOn && endDateOn) {
+            for (int i = 0; i < dbImages.size(); i++) {
+                CreateList createList = new CreateList();
+
+                String str = dbImages.get(i).getCaption();
+                String[] splitStr = str.trim().split("\\s+");
+
+                for (String token: splitStr) {
+                    //Log.e("TOKENS", "TOKEN: " + token);
+                    if (caption.equals(token.toUpperCase())) {
+                        if (isWithinLocation(dbImages.get(i).getLatitude(), dbImages.get(i).getLongitude())) {
+                            if (compareStartTimestamp(dbImages.get(i).getTimeStamp(),
+                                    startMonth, startDay, startYear) && compareEndTimestamp(dbImages.get(i).getTimeStamp(),
+                                    endMonth, endDay, endYear)) {
+                                loadData(imageList, dbImages, createList, i);
+                            }
+                        }
+                    }
+                }
+            }
+            return imageList;
+        }
+
+
+
+        // No Filters!
+        else {
+                // IF nothing is being used.
+                for (int i = 0; i < dbImages.size(); i++) {
+                    CreateList createList = new CreateList();
+                    loadData(imageList, dbImages, createList, i);
+                }
+            return imageList;
+            }
+    }
+
+
+    /*
+     * Only gets called from inside prepareData().  Loads in the photos to gallery from the database.
+     */
+    private void loadData(ArrayList<CreateList> imageList, ArrayList<Image> dbImages, CreateList createList, int i) {
+        createList.setImgName(dbImages.get(i).getCaption());
+        createList.setImgID(dbImages.get(i).getID());
+        // URI
+        Uri uri = Uri.parse(dbImages.get(i).getUri());
+        Bitmap thumbnail = null;
+        try {
+            InputStream stream = getContentResolver().openInputStream(uri);
+            thumbnail = BitmapFactory.decodeStream(stream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        createList.setImgBitmap(thumbnail);
+        imageList.add(createList);
 
     }
 
@@ -599,6 +628,37 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
             this.endLocationOn = false;
 
 
+    }
+
+
+
+    /*
+     *  Returns whether or not the passed in photo Location is between the start and end location filter points.
+     */
+    private boolean isWithinLocation(double latTest, double longTest) {
+        //Get the distance between start and end filter points.
+        float[] results = new float[1];
+        Location.distanceBetween(startLat, startLong, endLat, endLong, results);
+        float startToEndDistance = results[0];   // distance bewteen start and end points. IN METERS.
+
+        float halfDist = startToEndDistance / 2;  // half the distance between the two points.
+
+        results = new float[1];
+        Location.distanceBetween(startLat, startLong, latTest, longTest, results);
+        float distancePointToStart = results[0];   // distance bewteen start and end points.
+
+        results = new float[1];
+        Location.distanceBetween(endLat, endLong, latTest, longTest, results);
+        float distancePointToEnd = results[0];   // distance bewteen start and end points.
+
+        if (distancePointToStart <= halfDist && distancePointToEnd <= startToEndDistance) {
+            return true;
+        }
+        else if (distancePointToEnd <= halfDist && distancePointToStart <= startToEndDistance) {
+            return true;
+        }
+        else
+            return false;
     }
 
 

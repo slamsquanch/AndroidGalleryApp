@@ -135,53 +135,6 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-    /*public ArrayList<Image> filterTimestamp(String dateTimeFrom, String dateTimeTo) {
-        ArrayList<Image> filteredPhotos = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_NAME + " ORDER BY TIME ASC";
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                Image temp = new Image();
-                populate(temp, cursor);
-
-                // Do date comparison compare to, date formatter
-
-                if (temp.getTimeStamp().equals(dateTime)) {
-                    filteredPhotos.add(temp);
-                }
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        db.close();
-        return filteredPhotos;
-    } */
-
-    public ArrayList<Image> filterCaption (String tag) {
-        ArrayList<Image> filteredPhotos = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_NAME + " ORDER BY TIME ASC";
-        SQLiteDatabase db = this.getWritableDatabase();
-        if (tag == null || tag.isEmpty())
-            return getGallery();
-        else {
-            Cursor cursor = db.rawQuery(selectQuery, null);
-            if (cursor.moveToFirst()) {
-                do {
-                    Image temp = new Image();
-                    populate(temp, cursor);
-
-                    if (temp.getCaption().toLowerCase().contains(tag.toLowerCase()))
-                        filteredPhotos.add(temp);
-                } while (cursor.moveToNext());
-                cursor.close();
-                db.close();
-            }
-            return filteredPhotos;
-        }
-    }
-
-
 
     private void populate(Image photo, Cursor cursor) {
         photo.setID(cursor.getInt(0));

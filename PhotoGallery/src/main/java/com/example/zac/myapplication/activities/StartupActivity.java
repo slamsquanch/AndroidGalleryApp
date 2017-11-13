@@ -67,13 +67,11 @@ public class StartupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_startup);
 
-        //
         checkPermissions();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("QuickPic");
-
 
         //Ignores URI Issue
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
@@ -160,7 +158,7 @@ public class StartupActivity extends AppCompatActivity {
     private void onCaptureImageResult(Intent data) {
         setDate();
         Intent intent = new Intent(this, PreviewImageLarge.class);
-        intent.putExtra("URI_CAMERA", currentURI.toString());
+        intent.putExtra("URI", currentURI.toString());
         intent.putExtra("DIR", dir);
         intent.putExtra("MONTH", "" + month);
         intent.putExtra("DAY", "" + day);
