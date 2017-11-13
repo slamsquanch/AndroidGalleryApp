@@ -25,10 +25,10 @@
         android:id="@+id/PreviewImageCapture"
         android:layout_width="370dp"
         android:layout_height="330dp"
-        android:layout_above="@+id/uploadButton"
+        android:layout_above="@+id/location"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center_vertical|center_horizontal"
-        android:layout_marginBottom="36dp"
+        android:layout_marginBottom="24dp"
         android:text="Preview Photo" />
 
     <Button
@@ -37,9 +37,20 @@
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="39dp"
+        android:layout_marginBottom="19dp"
         android:onClick="uploadPhoto"
         android:text="Upload" />
+
+    <Button
+        android:id="@+id/location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/uploadButton"
+        android:layout_alignEnd="@+id/uploadButton"
+        android:layout_alignStart="@+id/uploadButton"
+        android:layout_marginBottom="11dp"
+        android:onClick="selectLocation"
+        android:text="Select Location" />
 
 
 </RelativeLayout>

@@ -11,17 +11,19 @@ public class Image {
     private String imgName;
     private String caption;
     private String timeStamp;
-    private String location;
+    private double latitude;
+    public double longitude;
     private static int count = 0;
 
     // constructor retrieving ALL information about a photo.
-    public Image(int ID, String URI, String name, String caption, String time, String location) {
+    public Image(int ID, String URI, String name, String caption, String time, double lat, double lon) {
         this.id = ID;
         this.uri = URI;
         this.imgName = name;
         this.caption = caption;
         this.timeStamp = time;
-        this.location = location;
+        this.latitude = lat;
+        this.longitude = lon;
         this.count++;
     }
 
@@ -69,13 +71,20 @@ public class Image {
         this.timeStamp = t;
     }
 
-    public void setLocationString(String loc) {
+    public void setLatitude(double lat) {
+        this.latitude = lat;
+    }
+
+    public void setLongitude(double lon) {
+        this.longitude = lon;
+    }
+    /*public void setLocationString(String loc) {
         this.location = loc;
     }
 
     public void setLocationGPS(String loc) {
         Location.convert(loc);
-    }
+    }*/
 
 
 
@@ -96,7 +105,15 @@ public class Image {
 
     public String getTimeStamp() { return this.timeStamp; }
 
-    public String getLocation() { return this.location; }
+    public String getLocation() { return "" + latitude + ", " + longitude; }
+
+    public double getLatitude() {
+        return this.latitude;
+    }
+
+    public double getLongitude() {
+        return this.longitude;
+    }
 
     public static int getCount() {
         return count;

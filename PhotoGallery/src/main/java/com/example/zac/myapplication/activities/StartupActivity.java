@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.zac.myapplication.R;
 import com.example.zac.myapplication.classes.Image;
@@ -41,6 +42,13 @@ import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
+
+import static java.lang.Math.round;
+
 public class StartupActivity extends AppCompatActivity {
 
     private final int REQUEST_RUNTIME_PERMISSION = 0;
@@ -50,6 +58,7 @@ public class StartupActivity extends AppCompatActivity {
     private String dir = null;
     private int month, day, year;   // used for TimeStamps
     private String timeStamp;
+    private double latitude, longitude;
 
 
     @Override
@@ -93,16 +102,7 @@ public class StartupActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        /*super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == REQUEST_CAMERA) {
-                onCaptureImageResult(data);
-            }
-            else {
-                makeImgFile(data);
-                Log.d("select file", "LOL NOOOPE :( ");
-            }
-        } */
+
         switch (requestCode) {
             case SELECT_FILE:
                 if (resultCode == RESULT_OK) {
@@ -111,7 +111,8 @@ public class StartupActivity extends AppCompatActivity {
                 break;
 
             case REQUEST_CAMERA:
-                Log.d("CAMERA", "resultCode: " + resultCode);
+                Log.e("CAMERA", "resultCode: " + resultCode);
+                Log.e("CAMERA", "resultCode: " + RESULT_OK);
                 if (resultCode == RESULT_OK) {
                     onCaptureImageResult(data);
                 }
@@ -120,6 +121,11 @@ public class StartupActivity extends AppCompatActivity {
     super.onActivityResult(requestCode, resultCode, data);
     }
 
+
+
+
+
+    @SuppressWarnings("deprecation")
     private void onSelectImageResult(Intent data) {
 
         setDate();
@@ -154,7 +160,7 @@ public class StartupActivity extends AppCompatActivity {
     private void onCaptureImageResult(Intent data) {
         setDate();
         Intent intent = new Intent(this, PreviewImageLarge.class);
-        intent.putExtra("URI", currentURI.toString());
+        intent.putExtra("URI_CAMERA", currentURI.toString());
         intent.putExtra("DIR", dir);
         intent.putExtra("MONTH", "" + month);
         intent.putExtra("DAY", "" + day);
@@ -180,6 +186,7 @@ public class StartupActivity extends AppCompatActivity {
             startActivityForResult(intent, SELECT_FILE);
         }
     }
+
 
 
 

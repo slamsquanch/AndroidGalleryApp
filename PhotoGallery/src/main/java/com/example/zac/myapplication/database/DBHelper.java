@@ -16,11 +16,11 @@ import java.util.ArrayList;
 
 public class DBHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 4;
+    public static final int DATABASE_VERSION = 5;
     public static final String DATABASE_NAME = "Image.db";
     public static final String DATABASE_ID = "id";
     public static final String TABLE_NAME = "ImageTable";
-    public static final String[] COLUMN_STRING = {"id", "uri", "imgName", "caption", "time"};
+    public static final String[] COLUMN_STRING = {"id", "uri", "imgName", "caption", "time", "latitude", "longitude"};
     private static DBHelper database = null;
 
 
@@ -39,7 +39,9 @@ public class DBHelper extends SQLiteOpenHelper {
                 "uri TEXT," +
                 "imgName TEXT," +
                 "caption TEXT," +
-                "time TEXT" +
+                "time TEXT," +
+                "latitude DOUBLE," +
+                "longitude DOUBLE" +
                 ")";
         db.execSQL(CREATE_TABLE);
     }
@@ -75,6 +77,8 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put("imgName", img.getImgName());
         values.put("caption", img.getCaption());
         values.put("time", img.getTimeStamp());
+        values.put("latitude", img.getLatitude());
+        values.put("longitude", img.getLongitude());
         db.insert(TABLE_NAME, null, values);
         db.close();
     }
@@ -177,12 +181,16 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
+
+
     private void populate(Image photo, Cursor cursor) {
         photo.setID(cursor.getInt(0));
         photo.setUri(cursor.getString(1));
         photo.setImgName(cursor.getString(2));
         photo.setCaption(cursor.getString(3));
         photo.setTime(cursor.getString(4));
+        photo.setLatitude(cursor.getDouble(5));
+        photo.setLongitude(cursor.getDouble(6));
     }
 
 

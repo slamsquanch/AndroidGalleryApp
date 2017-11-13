@@ -25,10 +25,16 @@
         android:title="End Date" />
 
     <item
-        android:id="@+id/filter_location"
+        android:id="@+id/filter_start_location"
         android:checkable="false"
-        android:onClick="filterLocation"
-        android:title="Location" />
+        android:onClick="selectStartLocation"
+        android:title="Start Location" />
+
+    <item
+        android:id="@+id/filter_end_location"
+        android:checkable="false"
+        android:onClick="selectEndLocation"
+        android:title="End Location" />
 
     <item
         android:id="@+id/filters_reset"
