@@ -146,6 +146,4 @@ public class DBHelper extends SQLiteOpenHelper {
         photo.setLongitude(cursor.getDouble(6));
     }
 
-
-
 }

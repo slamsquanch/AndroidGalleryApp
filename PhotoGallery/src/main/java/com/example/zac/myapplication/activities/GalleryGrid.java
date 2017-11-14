@@ -180,9 +180,6 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
     public void filterCaption(MenuItem item) {
         final EditText searchedTag = new EditText(this);
 
-        // Set the default text to a link of the Queen
-        //txtUrl.setHint("http://www.librarising.com/astrology/celebs/images2/QR/queenelizabethii.jpg");
-
         new AlertDialog.Builder(this)
                 .setTitle("Filter Caption")
                 .setMessage("search for tags")
@@ -219,11 +216,6 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
     }
 
 
-    // flag for location filter.
-    /*public void filterLocation(MenuItem item) {
-        this.locationFilterOn = true;
-    }*/
-
 
 
     /*
@@ -236,7 +228,7 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
 
         ArrayList<Image> dbImages = DBHelper.getInstance(this).getGallery();
         for(int i = 0; i < dbImages.size(); i ++) {
-            Log.d("dbIMAGE", "   ID: " + dbImages.get(i).getID() + "   DATE: " + dbImages.get(i).getTimeStamp());
+            Log.e("dbIMAGE", "   ID: " + dbImages.get(i).getID() + "   DATE: " + dbImages.get(i).getTimeStamp());
         }
 
         // IF Tag Filter is the only filter being used.
@@ -431,7 +423,6 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
         Log.e("COMPARE_ST_DATE", "Parsed start date(mm-dd-yy): " + month + "-" + day + "-" + year);
         Log.e("COMPARE_ST_DATE", "cmp start date(mm-dd-yy): " + cmpMonth + "-" + cmpDay + "-" + cmpYear);
 
-        //Log.e("COMPARE_ST_DATE", "start date comaprison: " + (year >= cmpYear && month > cmpMonth && day > cmpDay));
         if (year > cmpYear)
             return true;
         if (year == cmpYear)
@@ -459,7 +450,6 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
         Log.e("COMPARE_END_DATE", "Parsed end date(mm-dd-yy): " + month + "-" + day + "-" + year);
         Log.e("COMPARE_END_DATE", "cmp end date(mm-dd-yy): " + cmpMonth + "-" + cmpDay + "-" + cmpYear);
 
-        //Log.e("COMPARE_END_DATE", "end date comaprison: " + (year <= cmpYear && month < cmpMonth && day < cmpDay));
         if (year < cmpYear)
             return true;
         if (year == cmpYear)
@@ -599,7 +589,6 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
         }
         else
             this.startLocationOn = false;
-
     }
 
 
@@ -626,8 +615,6 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
         }
         else
             this.endLocationOn = false;
-
-
     }
 
 
@@ -686,7 +673,6 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
                 Log.e("OnActivityResult", "resultCode: " + resultCode);
                 Log.e("OnActivityResult", "RESULT_OK: " + RESULT_OK);
                 if (resultCode == RESULT_OK) {
-                    Log.e("OnActivityResult", "INSIDE ACTIVITY RESULT");
                     setStartLocation(data);
                 }
                 break;
@@ -695,7 +681,6 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
                 Log.e("OnActivityResult", "resultCode: " + resultCode);
                 Log.e("OnActivityResult", "RESULT_OK: " + RESULT_OK);
                 if (resultCode == RESULT_OK) {
-                    Log.e("OnActivityResult", "INSIDE ACTIVITY RESULT");
                     setEndLocation(data);
                 }
                 break;
@@ -712,8 +697,6 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
         //locationText.setText("Current Location: " + location.getLatitude() + ", " + location.getLongitude());
         Log.e("PLACE_PICKER", "inside OnLocationChanged()");
         Log.e("Location: ", location.getLatitude() + ", " + location.getLongitude());
-        //latitude = location.getLatitude();
-        //longitude = location.getLongitude();
         //locationManager.removeUpdates(this);
     }
 
@@ -771,8 +754,6 @@ public class GalleryGrid extends AppCompatActivity implements LocationListener {
                 }
                 return;
             }
-            // other 'case' lines to check for other
-            // permissions this app might request
         }
     }
 }
